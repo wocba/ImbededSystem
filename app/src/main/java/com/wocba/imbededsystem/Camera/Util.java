@@ -46,7 +46,7 @@ public class Util {
         return i;
     }
     /**
-     * 카메라로 보내는 intent
+     * 카메라로 보내는 intent12
      */
     public static Intent getCamaraIntent(File file){
         Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE, null);
