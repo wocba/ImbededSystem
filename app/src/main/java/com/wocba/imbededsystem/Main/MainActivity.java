@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -13,11 +14,13 @@ import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.wocba.imbededsystem.Camera.CameraActivity;
 import com.wocba.imbededsystem.Common.BaseActivity;
+import com.wocba.imbededsystem.Data.DbOpenHelper;
 import com.wocba.imbededsystem.R;
 
 public class MainActivity extends BaseActivity {
+
+    private DbOpenHelper mDbOpenHelper;
 
     // 임의로 정한 권한 상수
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 100;
@@ -27,6 +30,10 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mNavigationView.getMenu().getItem(0).setChecked(true);
+
+        mDbOpenHelper = new DbOpenHelper(this);
+        mDbOpenHelper.open();;
+
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("지 도"));
@@ -67,6 +74,19 @@ public class MainActivity extends BaseActivity {
         } else {
 
         }
+
+        if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA},
+                    1);
+        } else {
+
+        }
+
+
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -85,9 +105,14 @@ public class MainActivity extends BaseActivity {
         //noinspection SimplifiableIfStatement
         if(id == R.id.action_camera)
         {
-            Intent intent = new Intent(this, CameraActivity.class);
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

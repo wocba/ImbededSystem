@@ -1,10 +1,7 @@
 package com.wocba.imbededsystem.Data;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-
-import junit.framework.Assert;
 
 /**
  * Created by jinwo on 2017-10-18.
@@ -15,11 +12,11 @@ public class InfoClass {
     private String[] mData;
     private boolean mSelectable = true;
 
-    public String _id;
+    public int _id;
 
     public InfoClass(){}
 
-    public InfoClass(Context context, String _id, String name, String image, String lati, String longi, String content){
+    public InfoClass(Context context, int _id, String name, String image, String lati, String longi, String content){
         mData = new String[5];
         this._id = _id;
         mData[0] = name;
@@ -28,11 +25,11 @@ public class InfoClass {
         mData[3] = longi;
         mData[4] = content;
 
-        Assert.assertNotNull(context);
+ //       Assert.assertNotNull(context);
 
-        Resources res = context.getResources();
-        Drawable icon = res.getDrawable(context.getResources().getIdentifier(image,"drawable",context.getPackageName()));
-        mIcon = icon;
+ //       Resources res = context.getResources();
+//        Drawable icon = res.getDrawable(context.getResources().getIdentifier(image,"drawable",context.getPackageName()));
+ //       mIcon = icon;
     }
 
 

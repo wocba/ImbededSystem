@@ -27,16 +27,16 @@ public class ContentView extends LinearLayout {
         inflater.inflate(R.layout.mainlayout_onecol, this, true); // 리스트뷰 한 조각을 인플레이션
 
         // Set Icon
-        mIcon = (ImageView) findViewById(R.id.imageicon);
-        mIcon.setImageDrawable(aItem.getIcon());
+//        mIcon = (ImageView) findViewById(R.id.imageicon);
+//        mIcon.setImageDrawable(aItem.getIcon());
 
         // Set Text 01
         mText01 = (TextView) findViewById(R.id.name);
-        mText01.setText(aItem.getData(0));
+        mText01.setText(aItem.getData(2));
 
         // Set Text 03
         mText03 = (TextView) findViewById(R.id.content);
-        mText03.setText(aItem.getData(4));
+        mText03.setText(aItem.getData(3));
 
     }
 

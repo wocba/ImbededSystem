@@ -52,9 +52,9 @@ public class ContentAdapter extends BaseAdapter {
             itemView = new ContentView(mContext, mItems.get(position));
         } else {
             itemView = (ContentView) convertview;
-            itemView.setIcon(mItems.get(position).getIcon());
-            itemView.setText(0, mItems.get(position).getData(3));
-            itemView.setText(2, mItems.get(position).getData(2));
+//            itemView.setIcon(mItems.get(position).getIcon());
+            itemView.setText(0, mItems.get(position).getData(2));
+            itemView.setText(2, mItems.get(position).getData(3));
         }
         return itemView;
     }
