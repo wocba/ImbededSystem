@@ -23,6 +23,7 @@ public class MainActivity extends BaseActivity {
     private DbOpenHelper mDbOpenHelper;
 
 
+
     // 임의로 정한 권한 상수12
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 100;
 
