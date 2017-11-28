@@ -39,11 +39,23 @@
             android:name=".Main.MainActivity"
             android:label="메인"
             android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
+        <activity
+            android:name=".Main.SignInActivity"
+            android:label="로그인"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".Main.SignUpActivity"
+            android:label="회원가입"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <activity
