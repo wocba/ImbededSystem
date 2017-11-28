@@ -17,6 +17,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -25,6 +26,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.wocba.imbededsystem.Data.DbOpenHelper;
 import com.wocba.imbededsystem.R;
@@ -35,7 +37,7 @@ import java.util.ArrayList;
  * Created by jinwo on 2017-11-10.
  */
 
-public class MainMapFrag extends Fragment {
+public class MainMapFrag extends Fragment implements GoogleMap.OnMarkerClickListener {
     private GoogleMap map;
     private Bundle bundle;
     private LocationManager manager;
@@ -86,8 +88,9 @@ public class MainMapFrag extends Fragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+ //       bundle = getArguments();
         super.onActivityCreated(savedInstanceState);
-        bundle = getArguments();
+
         try{
 //            lati = Double.parseDouble(bundle.getString("lati"));
 //            longi = Double.parseDouble(bundle.getString("longi"));
@@ -129,8 +132,6 @@ public class MainMapFrag extends Fragment {
         double lng = Double.parseDouble(coordinates[1]);
         double lati;
         double longi;
-        String latiString;
-        String longiString;
 
         LatLng position = new LatLng(lat, lng);
         GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity());
@@ -148,7 +149,8 @@ public class MainMapFrag extends Fragment {
 
             BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.kbo);
             Bitmap b=bitmapdraw.getBitmap();
-            Bitmap smallMarker = Bitmap.createScaledBitmap(b, 20, 20, false);
+            Bitmap smallMarker = Bitmap.createScaledBitmap(b, 50, 50, false);
+
             map.addMarker(new MarkerOptions()
                     .position(new LatLng(lati,longi))
                     .title("Marker")
@@ -156,8 +158,7 @@ public class MainMapFrag extends Fragment {
             );
         }
         mCursor.close();
-
-
+        map.setOnMarkerClickListener(this);
 
     }
 
@@ -237,4 +238,16 @@ public class MainMapFrag extends Fragment {
         }
     }
 
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        Bundle b = new Bundle();
+        b.putString("1",marker.getPosition().toString());
+        b.putString("2",marker.getTitle().toString());
+
+        Toast.makeText(getActivity().getApplicationContext(), marker.getTitle() + "," + marker.getPosition(), Toast.LENGTH_SHORT).show();
+        MainContentFrag fragB = new MainContentFrag();
+        fragB.setArguments(b);
+        getFragmentManager().beginTransaction().replace(R.id.pager1, fragB);
+        return true;
+    }
 }

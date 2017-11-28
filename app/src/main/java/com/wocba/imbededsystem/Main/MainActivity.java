@@ -34,8 +34,7 @@ public class MainActivity extends BaseActivity {
         mNavigationView.getMenu().getItem(0).setChecked(true);
 
         mDbOpenHelper = new DbOpenHelper(this);
-        mDbOpenHelper.open();;
-
+        mDbOpenHelper.open();
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("지 도"));

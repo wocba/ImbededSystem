@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.wocba.imbededsystem.R;
 
@@ -14,6 +15,10 @@ import com.wocba.imbededsystem.R;
 
 public class MainContentFrag extends Fragment{
     private Bundle bundle;
+    TextView titleText;
+    TextView positionText;
+    String position;
+    String title;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -22,9 +27,18 @@ public class MainContentFrag extends Fragment{
     }
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        bundle = getArguments();
-
         super.onActivityCreated(savedInstanceState);
+
+        Bundle b = this.getArguments();
+        position = b.getString("1");
+        title = b.getString("2");
+
+        titleText = (TextView)getActivity().findViewById(R.id.text_title);
+        positionText = (TextView)getActivity().findViewById(R.id.text_position);
+
+        titleText.setText(title);
+        positionText.setText(position);
+
     }
 
 }
