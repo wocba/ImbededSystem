@@ -18,6 +18,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -51,6 +52,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
     private Uri mUri;
     private LocationManager manager;
     private ArrayList<LatLng> arrayPoints;
+    private DetailDialog detailDialog;
 
 
     // 임의로 정한 권한 상수123
@@ -310,11 +312,35 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        Bundle b = new Bundle();
-        b.putString("1",marker.getPosition().toString());
-        b.putString("2",marker.getTitle().toString());
+
+        String name = null;
+        String content = null;
 
         Toast.makeText(this, marker.getTitle() + "," + marker.getPosition(), Toast.LENGTH_SHORT).show();
+        mCursor = mDbOpenHelper.getAllColumns();
+
+        while (mCursor.moveToNext()) {
+            if(marker.getPosition().latitude == Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati"))) && marker.getPosition().longitude == Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi")))) {
+                name = mCursor.getString(mCursor.getColumnIndex("name")).toString();
+                content = mCursor.getString(mCursor.getColumnIndex("content")).toString();
+            }
+        }
+        mCursor.close();
+
+        detailDialog = new DetailDialog(this, deleteChatListener, deleteCancelListener,name,content);
+        detailDialog.show();
         return true;
     }
+
+    private View.OnClickListener deleteCancelListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            detailDialog.dismiss();
+        }
+    };
+
+    private View.OnClickListener deleteChatListener = new View.OnClickListener() {
+        public void onClick(View v) {
+
+        }
+    };
 }

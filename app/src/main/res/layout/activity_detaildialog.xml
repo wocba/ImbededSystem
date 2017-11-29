@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:gravity="center"
+              android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="250dip"
+        android:layout_height="450dip"
+        android:background="@color/grey_three"
+        android:orientation="vertical" >
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="200dp">
+
+            <ImageView
+                android:id="@+id/image_detail"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:layout_width="120dp"
+                android:layout_height="50dp"
+                android:text="이 름 :"
+                android:textColor="@color/black"
+                android:textSize="25dp"
+                android:gravity="center"/>
+
+            <TextView
+                android:layout_width="120dp"
+                android:layout_height="50dp"
+                android:textColor="@color/black"
+                android:textSize="20dp"
+                android:id="@+id/text_detail_name"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp">
+
+            <TextView
+                android:layout_width="120dp"
+                android:layout_height="50dp"
+                android:text="내 용 :"
+                android:textColor="@color/black"
+                android:textSize="25dp"
+                android:gravity="center"/>
+
+            <TextView
+                android:layout_width="120dp"
+                android:layout_height="60dp"
+                android:textColor="@color/black"
+                android:textSize="18dp"
+                android:id="@+id/text_detail_content"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp">
+
+            <Button
+                android:id="@+id/btn_chat"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="채팅하기"/>
+
+            <Button
+                android:id="@+id/btn_back"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="뒤로가기" />
+
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
