@@ -6,38 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <LinearLayout
-        android:layout_marginTop="?attr/actionBarSize"
-        android:id="@+id/main_list"
-        android:layout_width="fill_parent"
-        android:orientation="horizontal"
-        android:layout_height="250dp"
-        android:layout_centerHorizontal="true"
-        android:layout_weight="1"
-        android:gravity="center">
 
-    </LinearLayout>
-
-    <android.support.design.widget.TabLayout
-        android:id="@+id/tab_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-
-        android:layout_below="@+id/toolbar"
-        android:elevation="6dp"
-        android:layout_marginTop="300dp"
-        android:background="#16b273"
-        android:minHeight="?attr/actionBarSize" />
-
-    <com.wocba.imbededsystem.Main.WrapContentHeightViewPager
-        android:id="@+id/pager1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-
-        android:layout_above="@id/tab_layout"
-        android:layout_marginTop="350dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true" />
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_marginTop="?attr/actionBarSize"
+              android:id="@+id/map"
+              tools:context=".Main.MainActivity"
+              android:name="com.google.android.gms.maps.SupportMapFragment" />
 
 
     <!--<com.google.android.gms.maps.MapView-->

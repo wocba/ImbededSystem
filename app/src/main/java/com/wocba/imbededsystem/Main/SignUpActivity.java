@@ -15,14 +15,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.wocba.imbededsystem.Common.BaseActivity;
 import com.wocba.imbededsystem.R;
 
 /**
  * Created by hyuk2 on 2017. 11. 27..
  */
 
-public class SignUpActivity extends BaseActivity implements View.OnClickListener{
+public class SignUpActivity extends AppCompatActivity implements View.OnClickListener{
 
     EditText editTextEmail, editTextPassword;
     ProgressBar progressbar;
