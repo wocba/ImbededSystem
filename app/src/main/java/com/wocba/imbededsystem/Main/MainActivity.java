@@ -53,7 +53,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
     private ArrayList<LatLng> arrayPoints;
 
 
-    // 임의로 정한 권한 상수12
+    // 임의로 정한 권한 상수123
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 100;
 
     @Override
