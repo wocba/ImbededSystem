@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.wocba.imbededsystem.Camera.CameraActivity;
 import com.wocba.imbededsystem.Content.ContentActivity;
 import com.wocba.imbededsystem.Main.MainActivity;
 import com.wocba.imbededsystem.R;
@@ -141,7 +142,7 @@ public class BaseActivity extends AppCompatActivity
                 createBackStack(new Intent(this, ContentActivity.class));
                 break;
             case R.id.nav_camera:
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                Intent intent = new Intent(this, CameraActivity.class);
                 startActivity(intent);
                 break;
         }
