@@ -15,9 +15,11 @@ import android.support.v4.content.FileProvider;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -25,6 +27,9 @@ import com.wocba.imbededsystem.Common.BaseActivity;
 import com.wocba.imbededsystem.R;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * Created by jinwo on 2017-11-20.
@@ -33,7 +38,7 @@ import java.io.File;
 public class CameraActivity extends BaseActivity {
     private String imgPath = "";
     private StorageReference mStorageRef;
-    Button btn = null;
+    Button camera_btn, saving_btn = null;
     ImageView iv = null;
 
     /** Called when the activity is first created. */
@@ -55,14 +60,55 @@ public class CameraActivity extends BaseActivity {
         }
 
         mStorageRef = FirebaseStorage.getInstance().getReference();
-        btn = (Button)findViewById(R.id.btn);
         iv = (ImageView)findViewById(R.id.iv);
-        btn.setOnClickListener(new View.OnClickListener()
-        {
+        iv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent iv_intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(iv_intent, 2);
+            }
+        });
+        camera_btn = (Button)findViewById(R.id.camera_btn);
+        camera_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showCamera();
+            }
+        });
+
+        saving_btn = (Button)findViewById(R.id.saving_btn);
+        saving_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
             {
-                showCamera();
+                try {
+                    saveToLocalFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void showCamera() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, getFileUri());
+        startActivityForResult(intent, 1);
+    }
+
+    private void saveToLocalFile() throws IOException {
+        Uri file = Uri.fromFile(new File(imgPath));
+
+        mStorageRef.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                // Local temp file has been created
+                Toast.makeText(getApplicationContext(), "저장 완료", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle any errors
             }
         });
     }
@@ -77,12 +123,6 @@ public class CameraActivity extends BaseActivity {
         return FileProvider.getUriForFile(this, "com.wocba.imbededsystem.provider", file);
     }
 
-    private void showCamera() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, getFileUri());
-        startActivityForResult(intent, 1);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -93,9 +133,26 @@ public class CameraActivity extends BaseActivity {
                     Bitmap bitmap = BitmapFactory.decodeFile(imgPath);
                     iv.setImageBitmap(bitmap);
                     Uri file = Uri.fromFile(new File(imgPath));
-                    StorageReference riversRef = mStorageRef.child(imgPath);
+                    /*
+                    try {
+                        FileOutputStream fos = openFileOutput(imgPath, 0);
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100 , fos);
+                        fos.flush();
+                        fos.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
-                    riversRef.putFile(file)
+                    // 갤러리에 저장?
+                    try {
+                        MediaStore.Images.Media.insertImage(getContentResolver(), imgPath, "wow", "wow");
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    getApplicationContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, file));
+                    */
+
+                    mStorageRef.putFile(file)
                             .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                 @Override
                                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -111,6 +168,16 @@ public class CameraActivity extends BaseActivity {
                                 }
                             });
                     break;
+                case 2:
+                    Uri image = data.getData();
+                    try {
+                        Bitmap bitmap2 = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), image);
+                        iv.setImageBitmap(bitmap2);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+
             }
         }
     }

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
@@ -15,10 +14,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 import com.wocba.imbededsystem.Camera.CameraActivity;
 import com.wocba.imbededsystem.Content.ContentActivity;
 import com.wocba.imbededsystem.Main.MainActivity;
+
 import com.wocba.imbededsystem.R;
 
 /**
@@ -34,6 +37,7 @@ public class BaseActivity extends AppCompatActivity
     private DrawerLayout mDrawerLayout;
     protected NavigationView mNavigationView;
     private ActionBarDrawerToggle mToggle;
+    private FirebaseAuth mAuth;
 
     protected  boolean useToolbar(){
         return true;
@@ -46,6 +50,7 @@ public class BaseActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mAuth = FirebaseAuth.getInstance();
     }
 
     protected Toolbar getActionBarToolbar(){
@@ -144,6 +149,11 @@ public class BaseActivity extends AppCompatActivity
             case R.id.nav_camera:
                 Intent intent = new Intent(this, CameraActivity.class);
                 startActivity(intent);
+                break;
+            case R.id.nav_logout:
+                FirebaseAuth.getInstance().signOut();
+                Toast.makeText(this, "로그아웃", Toast.LENGTH_SHORT).show();
+                finish();
                 break;
         }
         closeNavDrawer();

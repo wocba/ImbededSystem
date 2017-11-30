@@ -83,6 +83,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                             Log.d(TAG, "createUserWithEmail:success");
                             Toast.makeText(getApplicationContext(), "로그인 성공", Toast.LENGTH_SHORT).show();
                             FirebaseUser user = mAuth.getCurrentUser();
+                            Toast.makeText(getApplicationContext(), user.getEmail(), Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         }
                         else {

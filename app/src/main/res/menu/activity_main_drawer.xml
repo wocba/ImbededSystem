@@ -17,6 +17,11 @@
             android:icon="@drawable/kbo"
             android:title="카메라" />
 
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/kbo"
+            android:title="로그아웃" />
+
 
     </group>
 
