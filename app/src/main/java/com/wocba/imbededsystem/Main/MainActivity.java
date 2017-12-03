@@ -1,7 +1,6 @@
 package com.wocba.imbededsystem.Main;
 
 import android.Manifest;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,7 +13,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.Menu;
@@ -36,14 +34,9 @@ import com.wocba.imbededsystem.Camera.CameraActivity;
 import com.wocba.imbededsystem.Common.BaseActivity;
 import com.wocba.imbededsystem.Data.DbOpenHelper;
 import com.wocba.imbededsystem.R;
+import com.wocba.imbededsystem.Service.MyService;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-
-import static android.os.Environment.getExternalStoragePublicDirectory;
 
 public class MainActivity extends BaseActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
 
@@ -56,7 +49,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
     private DetailDialog detailDialog;
 
 
-    // 임의로 정한 권한 상수123
+    // 임의로 정한 권한 상수
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 100;
 
     @Override
@@ -149,21 +142,21 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private File createImageFile() throws IOException {
-
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-//        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
-        return image;
-    }
+//    private File createImageFile() throws IOException {
+//
+//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+//        String imageFileName = "JPEG_" + timeStamp + "_";
+//        File storageDir = getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+//        File image = File.createTempFile(
+//                imageFileName,  /* prefix */
+//                ".jpg",         /* suffix */
+//                storageDir      /* directory */
+//        );
+//
+//        // Save a file: path for use with ACTION_VIEW intents
+////        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+//        return image;
+//    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -261,7 +254,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
 
             if(location != null) {
                 if((location.getAccuracy() > 15 && this != null)) {
-                    Toast.makeText(getApplicationContext(), "GPS수신이 약합니다.", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getApplicationContext(), "GPS수신이 약합니다.", Toast.LENGTH_SHORT).show();
                 }
 
 
@@ -270,6 +263,14 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
                     mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
                     MarkerOptions marker = new MarkerOptions();
                     marker.position(new LatLng(location.getLatitude(), location.getLongitude()));
+                    mCursor = mDbOpenHelper.getAllColumns();
+                    while(mCursor.moveToNext()) {
+                        if (location.getLatitude() - 0.001 < Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati"))) && location.getLatitude() + 0.001 > Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati"))) &&
+                                location.getLongitude() - 0.001 < Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi"))) && location.getLatitude() + 0.001 < Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi")))) {
+                            Intent intent = new Intent(getApplicationContext(), MyService.class);
+                            startService(intent);
+                        }
+                    }
                 }
 
                 // Update stored location
