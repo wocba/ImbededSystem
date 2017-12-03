@@ -60,12 +60,21 @@
 
         <activity
             android:name=".Content.ContentActivity"
+            android:parentActivityName=".Main.MainActivity"
             android:label="갤러리"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <activity
+            android:name=".ContentDetail.ContentDetailActivity"
+            android:parentActivityName=".Content.ContentActivity"
+            android:label="콘텐츠"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
+        <activity
             android:name=".Camera.CameraActivity"
+            android:parentActivityName=".Main.MainActivity"
             android:label="카메라"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>

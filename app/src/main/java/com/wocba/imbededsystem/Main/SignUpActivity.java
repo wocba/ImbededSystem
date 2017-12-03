@@ -70,7 +70,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             editTextPassword.requestFocus();
             return;
         }
-
+        
         progressbar.setVisibility(View.GONE);
 
         mAuth.createUserWithEmailAndPassword(email, password)

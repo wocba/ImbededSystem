@@ -12,11 +12,11 @@ public class InfoClass {
     private String[] mData;
     private boolean mSelectable = true;
 
-    public int _id;
+    public String _id;
 
     public InfoClass(){}
 
-    public InfoClass(Context context, int _id, String name, String image, String lati, String longi, String content){
+    public InfoClass(Context context, String _id, String name, String image, String lati, String longi, String content){
         mData = new String[5];
         this._id = _id;
         mData[0] = name;

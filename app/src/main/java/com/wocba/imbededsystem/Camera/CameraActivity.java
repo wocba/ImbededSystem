@@ -27,8 +27,6 @@ import com.wocba.imbededsystem.Common.BaseActivity;
 import com.wocba.imbededsystem.R;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
@@ -129,7 +127,6 @@ public class CameraActivity extends BaseActivity {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case 1:
-
                     Bitmap bitmap = BitmapFactory.decodeFile(imgPath);
                     iv.setImageBitmap(bitmap);
                     Uri file = Uri.fromFile(new File(imgPath));

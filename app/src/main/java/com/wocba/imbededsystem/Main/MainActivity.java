@@ -34,7 +34,6 @@ import com.wocba.imbededsystem.Camera.CameraActivity;
 import com.wocba.imbededsystem.Common.BaseActivity;
 import com.wocba.imbededsystem.Data.DbOpenHelper;
 import com.wocba.imbededsystem.R;
-import com.wocba.imbededsystem.Service.MyService;
 
 import java.util.ArrayList;
 
@@ -263,14 +262,14 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
                     mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
                     MarkerOptions marker = new MarkerOptions();
                     marker.position(new LatLng(location.getLatitude(), location.getLongitude()));
-                    mCursor = mDbOpenHelper.getAllColumns();
-                    while(mCursor.moveToNext()) {
-                        if (location.getLatitude() - 0.001 < Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati"))) && location.getLatitude() + 0.001 > Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati"))) &&
-                                location.getLongitude() - 0.001 < Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi"))) && location.getLatitude() + 0.001 < Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi")))) {
-                            Intent intent = new Intent(getApplicationContext(), MyService.class);
-                            startService(intent);
-                        }
-                    }
+//                    mCursor = mDbOpenHelper.getAllColumns();
+//                    while(mCursor.moveToNext()) {
+//                        if (location.getLatitude() - 0.001 < Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati"))) && location.getLatitude() + 0.001 > Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati"))) &&
+//                                location.getLongitude() - 0.001 < Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi"))) && location.getLatitude() + 0.001 < Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi")))) {
+//                            Intent intent = new Intent(getApplicationContext(), MyService.class);
+//                            startService(intent);
+//                        }
+//                    }
                 }
 
                 // Update stored location
