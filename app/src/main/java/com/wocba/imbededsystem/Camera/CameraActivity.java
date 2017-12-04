@@ -1,17 +1,18 @@
 package com.wocba.imbededsystem.Camera;
 
-import android.Manifest;
+
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -34,149 +35,148 @@ import java.io.IOException;
  */
 
 public class CameraActivity extends BaseActivity {
+    private static final String TAG = "CameraActivity";
+    private static final int IMAGE_CAMERA_REQUEST = 1;
+    private static final int IMAGE_GALLERY_REQUEST = 2;
+
+    // Storage Permissions
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            android.Manifest.permission.READ_EXTERNAL_STORAGE,
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
     private String imgPath = "";
     private StorageReference mStorageRef;
-    Button camera_btn, saving_btn = null;
-    ImageView iv = null;
+    private Button camera_btn, gallery_btn;
+    private ImageView iv;
 
-    /** Called when the activity is first created. */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
 
-        if (ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
+        // Firebase Storage 참조
+        mStorageRef = FirebaseStorage.getInstance().getReferenceFromUrl("gs://imbededproject.appspot.com");
 
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CAMERA},
-                    1);
-        } else {
-
-        }
-
-        mStorageRef = FirebaseStorage.getInstance().getReference();
         iv = (ImageView)findViewById(R.id.iv);
-        iv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent iv_intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(iv_intent, 2);
-            }
-        });
+
         camera_btn = (Button)findViewById(R.id.camera_btn);
         camera_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showCamera();
+                // permission이 있으면 cameraIntent()실행
+                verifyStoragePermissions();
             }
         });
 
-        saving_btn = (Button)findViewById(R.id.saving_btn);
-        saving_btn.setOnClickListener(new View.OnClickListener() {
+        gallery_btn = (Button)findViewById(R.id.gallery_btn);
+        gallery_btn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
-                try {
-                    saveToLocalFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            public void onClick(View v) {
+                galleryIntent();
             }
         });
     }
 
-    private void showCamera() {
+    // permission 체크
+    public void verifyStoragePermissions() {
+        int permission = ActivityCompat.checkSelfPermission(CameraActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    CameraActivity.this,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        } else {
+            // 이미 permission 존재하면 camera 실행
+            cameraIntent();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case REQUEST_EXTERNAL_STORAGE:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission이 있으면 camera 실행
+                    cameraIntent();
+                }
+                break;
+        }
+    }
+
+    private void cameraIntent() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, getFileUri());
-        startActivityForResult(intent, 1);
-    }
-
-    private void saveToLocalFile() throws IOException {
-        Uri file = Uri.fromFile(new File(imgPath));
-
-        mStorageRef.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                // Local temp file has been created
-                Toast.makeText(getApplicationContext(), "저장 완료", Toast.LENGTH_SHORT).show();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-            }
-        });
+        startActivityForResult(intent, IMAGE_CAMERA_REQUEST);
     }
 
     private Uri getFileUri() {
-        File dir = new File(getFilesDir(), "img");
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-        File file = new File(dir, System.currentTimeMillis() + ".png");
+        File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), System.currentTimeMillis() + ".png");
         imgPath = file.getAbsolutePath();
         return FileProvider.getUriForFile(this, "com.wocba.imbededsystem.provider", file);
     }
 
+    private void galleryIntent(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "image from gallery"), IMAGE_GALLERY_REQUEST);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
-                case 1:
-                    Bitmap bitmap = BitmapFactory.decodeFile(imgPath);
-                    iv.setImageBitmap(bitmap);
-                    Uri file = Uri.fromFile(new File(imgPath));
-                    /*
-                    try {
-                        FileOutputStream fos = openFileOutput(imgPath, 0);
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100 , fos);
-                        fos.flush();
-                        fos.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                case IMAGE_CAMERA_REQUEST:
+                    // 찍고 저장하면 imageView에 보여주면서 firebase에 저장
+                    Uri capturedImage = Uri.fromFile(new File(imgPath));
+                    Bitmap camera_bitmap = BitmapFactory.decodeFile(imgPath);
+                    iv.setImageBitmap(camera_bitmap);
 
-                    // 갤러리에 저장?
-                    try {
-                        MediaStore.Images.Media.insertImage(getContentResolver(), imgPath, "wow", "wow");
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    getApplicationContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, file));
-                    */
-
-                    mStorageRef.putFile(file)
-                            .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                @Override
-                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                    // Get a URL to the uploaded content
-                                    Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception exception) {
-                                    // Handle unsuccessful uploads
-                                    // ...
-                                }
-                            });
+                    StorageReference capturedImageRef = mStorageRef.child("images/" + capturedImage.getLastPathSegment());
+                    sendFirebase(capturedImageRef, capturedImage);
                     break;
-                case 2:
-                    Uri image = data.getData();
+
+                case IMAGE_GALLERY_REQUEST:
+                    // 사진 선택하면 imageView에 보여주면서 firebase에 저장
+                    Uri selectedImage = data.getData();
                     try {
-                        Bitmap bitmap2 = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), image);
-                        iv.setImageBitmap(bitmap2);
+                        Bitmap gallery_bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), selectedImage);
+                        iv.setImageBitmap(gallery_bitmap);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
 
+                    StorageReference selectedImageRef = mStorageRef.child("images/" + selectedImage.getLastPathSegment());
+                    sendFirebase(selectedImageRef, selectedImage);
+                    break;
 
             }
         }
+    }
+
+    private void sendFirebase(StorageReference imageRef, Uri image) {
+
+        imageRef.putFile(image)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Log.e(TAG, "success");
+                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        Log.e(TAG, "fail");
+                    }
+                });
     }
 }
 

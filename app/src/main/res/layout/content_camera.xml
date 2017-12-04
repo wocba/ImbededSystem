@@ -14,15 +14,15 @@
         android:layout_height="wrap_content">
         <Button
             android:id="@+id/camera_btn"
-            android:text="찍자"
+            android:text="사진 촬영"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <Button
-            android:id="@+id/saving_btn"
+            android:id="@+id/gallery_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="갤러리에 저장"/>
+            android:text="갤러리에서 가져오기"/>
     </LinearLayout>
 
 </LinearLayout>
