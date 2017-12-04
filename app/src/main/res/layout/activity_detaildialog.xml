@@ -12,7 +12,7 @@
         android:orientation="vertical" >
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="200dp">
+            android:layout_height="180dp">
 
             <ImageView
                 android:id="@+id/image_detail"
@@ -29,7 +29,7 @@
 
             <TextView
                 android:layout_width="120dp"
-                android:layout_height="50dp"
+                android:layout_height="60dp"
                 android:text="이 름 :"
                 android:textColor="@color/black"
                 android:textSize="25dp"
@@ -37,9 +37,9 @@
 
             <TextView
                 android:layout_width="120dp"
-                android:layout_height="50dp"
+                android:layout_height="60dp"
                 android:textColor="@color/black"
-                android:textSize="20dp"
+                android:textSize="14dp"
                 android:id="@+id/text_detail_name"/>
 
 
@@ -53,7 +53,7 @@
 
             <TextView
                 android:layout_width="120dp"
-                android:layout_height="50dp"
+                android:layout_height="100dp"
                 android:text="내 용 :"
                 android:textColor="@color/black"
                 android:textSize="25dp"
@@ -61,9 +61,9 @@
 
             <TextView
                 android:layout_width="120dp"
-                android:layout_height="60dp"
+                android:layout_height="100dp"
                 android:textColor="@color/black"
-                android:textSize="18dp"
+                android:textSize="14dp"
                 android:id="@+id/text_detail_content"/>
 
 

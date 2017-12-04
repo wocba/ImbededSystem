@@ -14,15 +14,17 @@ public class ContentDetailAdapter extends FragmentStatePagerAdapter {
 
     String lati;
     String longi;
+    String image;
 
 
-    public ContentDetailAdapter(FragmentManager fragmentManager, int mNumOfTabs, String lati, String longi)
+    public ContentDetailAdapter(FragmentManager fragmentManager, int mNumOfTabs, String lati, String longi, String image)
     {
         super(fragmentManager);
         this.mNumOfTabs = mNumOfTabs;
 
         this.lati = lati;
         this.longi = longi;
+        this.image = image;
     }
 
 
@@ -42,6 +44,7 @@ public class ContentDetailAdapter extends FragmentStatePagerAdapter {
                 return contentDetailMapFrag;
             case 1:
                 ContentDetailImageFrag contentDetailImageFrag = new ContentDetailImageFrag();
+                args.putString("image",image);
                 contentDetailImageFrag.setArguments(args);
                 return contentDetailImageFrag;
             default:

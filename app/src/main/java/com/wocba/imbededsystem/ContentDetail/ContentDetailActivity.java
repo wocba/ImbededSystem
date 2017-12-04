@@ -37,6 +37,7 @@ public class ContentDetailActivity extends BaseActivity{
         String content = intent.getStringExtra("content");
         String lati = intent.getStringExtra("lati");
         String longi = intent.getStringExtra("longi");
+        String image = intent.getStringExtra("image");
 
 
 
@@ -67,7 +68,7 @@ public class ContentDetailActivity extends BaseActivity{
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager1);
 
         final ContentDetailAdapter adapter = new ContentDetailAdapter
-                (getSupportFragmentManager(), tabLayout.getTabCount(), lati,longi);
+                (getSupportFragmentManager(), tabLayout.getTabCount(), lati,longi,image);
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

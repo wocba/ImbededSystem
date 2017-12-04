@@ -1,5 +1,7 @@
 package com.wocba.imbededsystem.ContentDetail;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -45,11 +47,16 @@ public class ContentDetailMapFrag extends Fragment{
 
         point = new LatLng(lati,longi);
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 17));
+
+        BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.kbo);
+        Bitmap b=bitmapdraw.getBitmap();
+        Bitmap smallMarker = Bitmap.createScaledBitmap(b, 50, 50, false);
+
         MarkerOptions marker = new MarkerOptions();
         marker.position(new LatLng(lati,longi));
         marker.title("위치");
         marker.draggable(true);
-        marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.kbo));
+        marker.icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
         map.addMarker(marker);
 
         super.onActivityCreated(savedInstanceState);

@@ -69,6 +69,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
         mDbOpenHelper = new DbOpenHelper(this);
         mDbOpenHelper.open();
 
+
         if (ContextCompat.checkSelfPermission(getApplicationContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -346,6 +347,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         String name = null;
         String content = null;
+        String image = null;
 
         Toast.makeText(this, marker.getTitle() + "," + marker.getPosition(), Toast.LENGTH_SHORT).show();
         mCursor = mDbOpenHelper.getAllColumns();
@@ -354,11 +356,12 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
             if(marker.getPosition().latitude == Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati"))) && marker.getPosition().longitude == Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi")))) {
                 name = mCursor.getString(mCursor.getColumnIndex("name")).toString();
                 content = mCursor.getString(mCursor.getColumnIndex("content")).toString();
+                image = mCursor.getString(mCursor.getColumnIndex("image")).toString();
             }
         }
         mCursor.close();
 
-        detailDialog = new DetailDialog(this, deleteChatListener, deleteCancelListener,name,content);
+        detailDialog = new DetailDialog(this, deleteChatListener, deleteCancelListener,name,content,image);
         detailDialog.show();
         return true;
     }

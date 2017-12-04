@@ -53,6 +53,7 @@ public class ContentActivity extends BaseActivity{
                 intent.putExtra("content", data[4]);
                 intent.putExtra("lati", data[2]);
                 intent.putExtra("longi", data[3]);
+                intent.putExtra("image", data[1]);
 
                 createBackStack(intent);
             }
