@@ -32,11 +32,11 @@ public class ContentView extends LinearLayout {
 
         // Set Text 01
         mText01 = (TextView) findViewById(R.id.name);
-        mText01.setText(aItem.getData(0));
+        mText01.setText(aItem.getData(2));
 
         // Set Text 03
         mText03 = (TextView) findViewById(R.id.content);
-        mText03.setText(aItem.getData(4));
+        mText03.setText(aItem.getData(3));
 
     }
 

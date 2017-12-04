@@ -53,8 +53,8 @@ public class ContentAdapter extends BaseAdapter {
         } else {
             itemView = (ContentView) convertview;
 //            itemView.setIcon(mItems.get(position).getIcon());
-            itemView.setText(0, mItems.get(position).getData(0));
-            itemView.setText(2, mItems.get(position).getData(4));
+            itemView.setText(0, mItems.get(position).getData(2));
+            itemView.setText(2, mItems.get(position).getData(3));
         }
         return itemView;
     }

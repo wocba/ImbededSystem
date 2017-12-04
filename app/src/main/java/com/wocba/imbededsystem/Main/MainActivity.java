@@ -32,30 +32,51 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.wocba.imbededsystem.Camera.CameraActivity;
 import com.wocba.imbededsystem.Common.BaseActivity;
 import com.wocba.imbededsystem.Data.DbOpenHelper;
+import com.wocba.imbededsystem.Data.FireClass;
 import com.wocba.imbededsystem.R;
 import com.wocba.imbededsystem.Service.MyService;
 
 import java.util.ArrayList;
 
 public class MainActivity extends BaseActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
-
+    private static final String TAG = "MainActivity";
     private DbOpenHelper mDbOpenHelper;
-    private GoogleMap mMap;
+
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mDatabaseReference;
+    private ChildEventListener mChildMapEventListener;
+    private ChildEventListener mChildMarkerEventListener;
+    private ChildEventListener mChildLocationEventListener;
     private Cursor mCursor;
+
+    private GoogleMap mMap;
     private Uri mUri;
     private LocationManager manager;
     private ArrayList<LatLng> arrayPoints;
+    private Marker Bmarker;
+    private Location mLocation;
+
     private DetailDialog detailDialog;
+
     private boolean push = false;
     private boolean push_main = false;
+
     private MediaPlayer media;
+
     private double lati;
     private double longi;
-
-
+    private String name = null;
+    private String content = null;
+    private String image = null;
+    SharedPreferences pref;
 
     // 임의로 정한 권한 상수
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 100;
@@ -68,6 +89,8 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         mDbOpenHelper = new DbOpenHelper(this);
         mDbOpenHelper.open();
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mDatabaseReference = mFirebaseDatabase.getReference("marker");
 
 
         if (ContextCompat.checkSelfPermission(getApplicationContext(),
@@ -144,22 +167,6 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-//    private File createImageFile() throws IOException {
-//
-//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-//        String imageFileName = "JPEG_" + timeStamp + "_";
-//        File storageDir = getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
-//        File image = File.createTempFile(
-//                imageFileName,  /* prefix */
-//                ".jpg",         /* suffix */
-//                storageDir      /* directory */
-//        );
-//
-//        // Save a file: path for use with ACTION_VIEW intents
-////        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
-//        return image;
-//    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -200,8 +207,8 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         double lat = Double.parseDouble(coordinates[0]);
         double lng = Double.parseDouble(coordinates[1]);
-        double lati;
-        double longi;
+//        double lati;
+//        double longi;
 
         LatLng position = new LatLng(lat, lng);
         GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
@@ -210,25 +217,63 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 16));
         arrayPoints = new ArrayList<LatLng>();
-        mCursor = mDbOpenHelper.getAllColumns();
-        while (mCursor.moveToNext()) {
+//        mCursor = mDbOpenHelper.getAllColumns();
+//        while (mCursor.moveToNext()) {
+//
+//            lati = Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati")).toString());
+//            longi = Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi")).toString());
+//
+//            BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.kbo);
+//            Bitmap b=bitmapdraw.getBitmap();
+//            Bitmap smallMarker = Bitmap.createScaledBitmap(b, 50, 50, false);
+//
+//            mMap.addMarker(new MarkerOptions()
+//                    .position(new LatLng(lati,longi))
+//                    .title("Marker")
+//                    .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+//            );
+//        }
+//        mCursor.close();
+//        mMap.setOnMarkerClickListener(this);
 
-            lati = Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati")).toString());
-            longi = Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi")).toString());
+        mChildMapEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                double lati = Double.parseDouble(dataSnapshot.getValue(FireClass.class).lati);
+                double longi = Double.parseDouble(dataSnapshot.getValue(FireClass.class).longi);
+                BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.kbo);
+                Bitmap b = bitmapdraw.getBitmap();
+                Bitmap smallMarker = Bitmap.createScaledBitmap(b, 50, 50, false);
 
-            BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.kbo);
-            Bitmap b=bitmapdraw.getBitmap();
-            Bitmap smallMarker = Bitmap.createScaledBitmap(b, 50, 50, false);
+                mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(lati, longi))
+                        .title("Marker")
+                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                );
+            }
 
-            mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(lati,longi))
-                    .title("Marker")
-                    .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
-            );
-        }
-        mCursor.close();
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        mDatabaseReference.addChildEventListener(mChildMapEventListener);
         mMap.setOnMarkerClickListener(this);
-
     }
 
     private void startLocationService(){
@@ -254,6 +299,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         public void onLocationChanged(Location location) {
 
+            mLocation = location;
             if(location != null) {
                 if((location.getAccuracy() > 15 && this != null)) {
 //                    Toast.makeText(getApplicationContext(), "GPS수신이 약합니다.", Toast.LENGTH_SHORT).show();
@@ -265,32 +311,74 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
                     mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
                     MarkerOptions marker = new MarkerOptions();
                     marker.position(new LatLng(location.getLatitude(), location.getLongitude()));
-                    SharedPreferences pref = getSharedPreferences("pref", MODE_PRIVATE);
+                    pref = getSharedPreferences("pref", MODE_PRIVATE);
                     push = pref.getBoolean("push", false);
                     if(push == true) {
-                        mCursor = mDbOpenHelper.getAllColumns();
-                        while(mCursor.moveToNext()) {
-                            if (location.getLatitude() - 0.001 < Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati"))) && location.getLatitude() + 0.001 > Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati"))) &&
-                                    location.getLongitude() - 0.001 < Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi"))) && location.getLatitude() + 0.001 < Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi")))) {
-                                if(lati == Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati"))) && longi == Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi")))){
-                                    savePushMainOffPreferences();
-                                } else{
-                                    savePushMainOnPreferences();
+
+                        mChildLocationEventListener = new ChildEventListener() {
+                            @Override
+                            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                                if(mLocation.getLatitude() - 0.001 < Double.parseDouble(dataSnapshot.getValue(FireClass.class).lati) && mLocation.getLatitude() + 0.001 > Double.parseDouble(dataSnapshot.getValue(FireClass.class).lati) &&
+                                        mLocation.getLongitude() - 0.001 < Double.parseDouble(dataSnapshot.getValue(FireClass.class).longi) && mLocation.getLatitude() + 0.001 < Double.parseDouble(dataSnapshot.getValue(FireClass.class).longi)){
+                                    if(lati == Double.parseDouble(dataSnapshot.getValue(FireClass.class).lati) && longi == Double.parseDouble(dataSnapshot.getValue(FireClass.class).longi)){
+                                        savePushMainOffPreferences();
+                                    } else{
+                                        savePushMainOnPreferences();
+                                    }
+                                    push_main = pref.getBoolean("push_main", false);
+                                    if(push_main == true){
+                                        Intent intent = new Intent(getApplicationContext(), MyService.class);
+                                        startService(intent);
+                                    }
+                                    lati = Double.parseDouble(dataSnapshot.getValue(FireClass.class).lati);
+                                    longi = Double.parseDouble(dataSnapshot.getValue(FireClass.class).longi);
                                 }
-                                push_main = pref.getBoolean("push_main", false);
-                                if(push_main == true){
-                                    Intent intent = new Intent(getApplicationContext(), MyService.class);
-                                    startService(intent);
-                                }
-                                lati = Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati")));
-                                longi = Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi")));
-//                                MediaPlayer media = new MediaPlayer();
-//                                media.create(getApplicationContext(),R.raw.ppap);
-//                                media.setLooping(false);
-//                                media.start();
                             }
-                        }
+
+                            @Override
+                            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                            }
+
+                            @Override
+                            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                            }
+
+                            @Override
+                            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        };
+                        mDatabaseReference.addChildEventListener(mChildLocationEventListener);
+
+
+//                        mCursor = mDbOpenHelper.getAllColumns();
+//                        while(mCursor.moveToNext()) {
+//                            if (location.getLatitude() - 0.001 < Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati"))) && location.getLatitude() + 0.001 > Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati"))) &&
+//                                    location.getLongitude() - 0.001 < Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi"))) && location.getLatitude() + 0.001 < Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi")))) {
+//                                if(lati == Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati"))) && longi == Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi")))){
+//                                    savePushMainOffPreferences();
+//                                } else{
+//                                    savePushMainOnPreferences();
+//                                }
+//                                push_main = pref.getBoolean("push_main", false);
+//                                if(push_main == true){
+//                                    Intent intent = new Intent(getApplicationContext(), MyService.class);
+//                                    startService(intent);
+//                                }
+//                                lati = Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati")));
+//                                longi = Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi")));
+//                            }
+//                        }
                     }
+
 
                 }
 
@@ -340,26 +428,64 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
             media.release();
             media = null;
         }
+//        mDatabaseReference.removeEventListener(mChildMapEventListener);
+//        mDatabaseReference.removeEventListener(mChildMarkerEventListener);
+//        mDatabaseReference.removeEventListener(mChildLocationEventListener);
     }
 
     @Override
     public boolean onMarkerClick(Marker marker) {
 
-        String name = null;
-        String content = null;
-        String image = null;
+        Bmarker = marker;
+//        String name = null;
+//        String content = null;
+//        String image = null;
 
-        Toast.makeText(this, marker.getTitle() + "," + marker.getPosition(), Toast.LENGTH_SHORT).show();
-        mCursor = mDbOpenHelper.getAllColumns();
+        Toast.makeText(this, Bmarker.getTitle() + "," + Bmarker.getPosition(), Toast.LENGTH_SHORT).show();
 
-        while (mCursor.moveToNext()) {
-            if(marker.getPosition().latitude == Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati"))) && marker.getPosition().longitude == Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi")))) {
-                name = mCursor.getString(mCursor.getColumnIndex("name")).toString();
-                content = mCursor.getString(mCursor.getColumnIndex("content")).toString();
-                image = mCursor.getString(mCursor.getColumnIndex("image")).toString();
+        mChildMarkerEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if(Bmarker.getPosition().latitude == Double.parseDouble(dataSnapshot.getValue(FireClass.class).lati) &&
+                        Bmarker.getPosition().longitude == Double.parseDouble(dataSnapshot.getValue(FireClass.class).longi)){
+                    name = dataSnapshot.getValue(FireClass.class).userName;
+                    content = dataSnapshot.getValue(FireClass.class).comment;
+                    image = dataSnapshot.getValue(FireClass.class).PhotoUrl;
+                }
             }
-        }
-        mCursor.close();
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        mDatabaseReference.addChildEventListener(mChildMarkerEventListener);
+//
+//        mCursor = mDbOpenHelper.getAllColumns();
+//
+//        while (mCursor.moveToNext()) {
+//            if(marker.getPosition().latitude == Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati"))) && marker.getPosition().longitude == Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi")))) {
+//                name = mCursor.getString(mCursor.getColumnIndex("name")).toString();
+//                content = mCursor.getString(mCursor.getColumnIndex("content")).toString();
+//                image = mCursor.getString(mCursor.getColumnIndex("image")).toString();
+//            }
+//        }
+//        mCursor.close();
 
         detailDialog = new DetailDialog(this, deleteChatListener, deleteCancelListener,name,content,image);
         detailDialog.show();
@@ -393,4 +519,6 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
         editor.putBoolean("push_main", false);
         editor.commit();
     }
+
+
 }
