@@ -32,7 +32,7 @@ public class ContentActivity extends BaseActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_content);
-        mNavigationView.getMenu().getItem(1).setChecked(true);
+        mNavigationView.getMenu().getItem(2).setChecked(true);
         listView2 = (ListView) findViewById (R.id.content_list);
         mDbOpenHelper = new DbOpenHelper(this);
         mInfoArray = new ArrayList<InfoClass>();

@@ -21,6 +21,7 @@ import com.wocba.imbededsystem.Camera.CameraActivity;
 import com.wocba.imbededsystem.Chat.ChatNick;
 import com.wocba.imbededsystem.Content.ContentActivity;
 import com.wocba.imbededsystem.Main.MainActivity;
+import com.wocba.imbededsystem.Option.OptionActivity;
 import com.wocba.imbededsystem.R;
 
 /**
@@ -152,6 +153,9 @@ public class BaseActivity extends AppCompatActivity
             case R.id.nav_chat:
                 Intent intentChat = new Intent(this, ChatNick.class);
                 startActivity(intentChat);
+                break;
+            case R.id.nav_option:
+                createBackStack(new Intent(this, OptionActivity.class));
                 break;
             case R.id.nav_logout:
                 FirebaseAuth.getInstance().signOut();

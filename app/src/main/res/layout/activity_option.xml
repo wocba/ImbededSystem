@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<android.support.v4.widget.DrawerLayout
+    tools:context=".Option.OptionActivity"
+    tools:openDrawer="start"
+    android:fitsSystemWindows="true"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:id="@+id/drawer_layout"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <android.support.design.widget.CoordinatorLayout
+        android:fitsSystemWindows="true"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <include layout="@layout/global_app_bar_layout"/>
+
+        <!-- Content -->
+
+
+        <ListView
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:id="@android:id/list"
+            android:layout_marginTop="?attr/actionBarSize"/>
+
+    </android.support.design.widget.CoordinatorLayout>
+
+    <!-- Nav mDrawerLayout -->
+
+
+    <include layout="@layout/global_navdrawer"/>
+
+</android.support.v4.widget.DrawerLayout>

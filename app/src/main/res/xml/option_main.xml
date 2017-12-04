@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:title="푸쉬 여부"
+        android:icon="@drawable/kbo"
+        android:defaultValue="false"
+        android:summary="푸쉬 여부를 설정합니다."
+        android:key="pref_push"/>
+
+</PreferenceScreen>

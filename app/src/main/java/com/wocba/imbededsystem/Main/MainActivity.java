@@ -3,6 +3,7 @@ package com.wocba.imbededsystem.Main;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -11,6 +12,7 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -34,6 +36,7 @@ import com.wocba.imbededsystem.Camera.CameraActivity;
 import com.wocba.imbededsystem.Common.BaseActivity;
 import com.wocba.imbededsystem.Data.DbOpenHelper;
 import com.wocba.imbededsystem.R;
+import com.wocba.imbededsystem.Service.MyService;
 
 import java.util.ArrayList;
 
@@ -46,6 +49,12 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
     private LocationManager manager;
     private ArrayList<LatLng> arrayPoints;
     private DetailDialog detailDialog;
+    private boolean push = false;
+    private boolean push_main = false;
+    private MediaPlayer media;
+    private double lati;
+    private double longi;
+
 
 
     // 임의로 정한 권한 상수
@@ -118,20 +127,13 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
         //noinspection SimplifiableIfStatement
         if(id == R.id.action_camera)
         {
-//            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//            startActivity(intent);
-//            try{
-//                File file =  createImageFile();
-//
-//                mUri = FileProvider.getUriForFile(getApplication().getApplicationContext(),
-//                        "com.wocba.imbededsystem.provider", file);
-//                intent.putExtra(MediaStore.EXTRA_OUTPUT, mUri);
-//                startActivity(intent);
-//            }catch (IOException e){
-//                e.printStackTrace();
-//            }
             Intent intent = new Intent(this, CameraActivity.class);
             startActivity(intent);
+            Toast.makeText(getApplicationContext(), "하잉", Toast.LENGTH_SHORT).show();
+//            media = new MediaPlayer();
+//            media.create(getBaseContext(),R.raw.ppap);
+//            media.setLooping(false);
+//            media.start();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -262,14 +264,33 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
                     mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
                     MarkerOptions marker = new MarkerOptions();
                     marker.position(new LatLng(location.getLatitude(), location.getLongitude()));
-//                    mCursor = mDbOpenHelper.getAllColumns();
-//                    while(mCursor.moveToNext()) {
-//                        if (location.getLatitude() - 0.001 < Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati"))) && location.getLatitude() + 0.001 > Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati"))) &&
-//                                location.getLongitude() - 0.001 < Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi"))) && location.getLatitude() + 0.001 < Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi")))) {
-//                            Intent intent = new Intent(getApplicationContext(), MyService.class);
-//                            startService(intent);
-//                        }
-//                    }
+                    SharedPreferences pref = getSharedPreferences("pref", MODE_PRIVATE);
+                    push = pref.getBoolean("push", false);
+                    if(push == true) {
+                        mCursor = mDbOpenHelper.getAllColumns();
+                        while(mCursor.moveToNext()) {
+                            if (location.getLatitude() - 0.001 < Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati"))) && location.getLatitude() + 0.001 > Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati"))) &&
+                                    location.getLongitude() - 0.001 < Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi"))) && location.getLatitude() + 0.001 < Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi")))) {
+                                if(lati == Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati"))) && longi == Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi")))){
+                                    savePushMainOffPreferences();
+                                } else{
+                                    savePushMainOnPreferences();
+                                }
+                                push_main = pref.getBoolean("push_main", false);
+                                if(push_main == true){
+                                    Intent intent = new Intent(getApplicationContext(), MyService.class);
+                                    startService(intent);
+                                }
+                                lati = Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati")));
+                                longi = Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi")));
+//                                MediaPlayer media = new MediaPlayer();
+//                                media.create(getApplicationContext(),R.raw.ppap);
+//                                media.setLooping(false);
+//                                media.start();
+                            }
+                        }
+                    }
+
                 }
 
                 // Update stored location
@@ -312,6 +333,15 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(media != null){
+            media.release();
+            media = null;
+        }
+    }
+
+    @Override
     public boolean onMarkerClick(Marker marker) {
 
         String name = null;
@@ -344,4 +374,20 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         }
     };
+
+    private void savePushMainOnPreferences()
+    {
+        SharedPreferences pref = getSharedPreferences("pref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putBoolean("push_main", true);
+        editor.commit();
+    }
+
+    private void savePushMainOffPreferences()
+    {
+        SharedPreferences pref = getSharedPreferences("pref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putBoolean("push_main", false);
+        editor.commit();
+    }
 }

@@ -93,6 +93,13 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
+        <activity
+            android:name=".Option.OptionActivity"
+            android:parentActivityName=".Main.MainActivity"
+            android:label="설정"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
         <service
             android:name=".Service.MyService"
             android:enabled="true"
