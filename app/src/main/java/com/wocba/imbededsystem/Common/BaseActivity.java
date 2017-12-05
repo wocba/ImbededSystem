@@ -17,7 +17,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.wocba.imbededsystem.Camera.CameraActivity;
 import com.wocba.imbededsystem.Chat.ChatNick;
 import com.wocba.imbededsystem.Content.ContentActivity;
 import com.wocba.imbededsystem.Main.MainActivity;
@@ -145,10 +144,6 @@ public class BaseActivity extends AppCompatActivity
                 break;
             case R.id.nav_content:
                 createBackStack(new Intent(this, ContentActivity.class));
-                break;
-            case R.id.nav_camera:
-                Intent intent = new Intent(this, CameraActivity.class);
-                startActivity(intent);
                 break;
             case R.id.nav_chat:
                 Intent intentChat = new Intent(this, ChatNick.class);

@@ -23,6 +23,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.wocba.imbededsystem.Common.BaseActivity;
+import com.wocba.imbededsystem.Data.FireClass;
 import com.wocba.imbededsystem.R;
 
 import java.io.File;
@@ -44,10 +45,12 @@ public class CameraActivity extends BaseActivity {
             android.Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
+
     private String imgPath = "";
     private StorageReference mStorageRef;
     private Button camera_btn, gallery_btn;
     private ImageView iv;
+    private String content;
 
 
     @Override
@@ -138,8 +141,13 @@ public class CameraActivity extends BaseActivity {
                     Bitmap camera_bitmap = BitmapFactory.decodeFile(imgPath);
                     iv.setImageBitmap(camera_bitmap);
 
+//                    contentDialog = new ContentDialog(this, contentListener);
+//                    contentDialog.show();
                     StorageReference capturedImageRef = mStorageRef.child("images/" + capturedImage.getLastPathSegment());
                     sendFirebase(capturedImageRef, capturedImage);
+                    FireClass fireClass = new FireClass();
+                    fireClass.userName = "jinwoo002@naver.com";
+                    fireClass.PhotoUrl = capturedImage.toString();
                     break;
 
                 case IMAGE_GALLERY_REQUEST:
@@ -177,6 +185,7 @@ public class CameraActivity extends BaseActivity {
                     }
                 });
     }
+
 }
 
 

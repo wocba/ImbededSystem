@@ -9,6 +9,7 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -19,10 +20,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-import android.support.v4.app.TaskStackBuilder;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.wocba.imbededsystem.Camera.CameraActivity;
 import com.wocba.imbededsystem.Chat.ChatNick;
 import com.wocba.imbededsystem.Content.ContentActivity;
 import com.wocba.imbededsystem.Main.MainActivity;
@@ -82,7 +81,7 @@ public class OptionActivity extends PreferenceActivity implements NavigationView
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.option_main);
         setContentView(R.layout.activity_option);
-        mNavigationView.getMenu().getItem(4).setChecked(true);
+        mNavigationView.getMenu().getItem(3).setChecked(true);
     }
 
     @Override
@@ -125,10 +124,6 @@ public class OptionActivity extends PreferenceActivity implements NavigationView
                 break;
             case R.id.nav_content:
                 createBackStack(new Intent(this, ContentActivity.class));
-                break;
-            case R.id.nav_camera:
-                Intent intent = new Intent(this, CameraActivity.class);
-                startActivity(intent);
                 break;
             case R.id.nav_chat:
                 Intent intentChat = new Intent(this, ChatNick.class);

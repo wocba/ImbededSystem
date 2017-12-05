@@ -15,8 +15,13 @@ import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,25 +37,34 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.wocba.imbededsystem.Camera.CameraActivity;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.wocba.imbededsystem.Common.BaseActivity;
 import com.wocba.imbededsystem.Data.DbOpenHelper;
 import com.wocba.imbededsystem.Data.FireClass;
 import com.wocba.imbededsystem.R;
 import com.wocba.imbededsystem.Service.MyService;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class MainActivity extends BaseActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
     private static final String TAG = "MainActivity";
+    private static final int IMAGE_CAMERA_REQUEST = 1;
+    private static final int IMAGE_GALLERY_REQUEST = 2;
+
     private DbOpenHelper mDbOpenHelper;
 
     private FirebaseDatabase mFirebaseDatabase;
+    private StorageReference mStorageRef;
     private DatabaseReference mDatabaseReference;
     private ChildEventListener mChildMapEventListener;
     private ChildEventListener mChildMarkerEventListener;
@@ -65,6 +79,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
     private Location mLocation;
 
     private DetailDialog detailDialog;
+    private ContentDialog contentDialog;
 
     private boolean push = false;
     private boolean push_main = false;
@@ -76,6 +91,8 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
     private String name = null;
     private String content = null;
     private String image = null;
+    private String imgPath = "";
+    private String mContent = null;
     SharedPreferences pref;
 
     // 임의로 정한 권한 상수
@@ -91,6 +108,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
         mDbOpenHelper.open();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mDatabaseReference = mFirebaseDatabase.getReference("marker");
+        mStorageRef = FirebaseStorage.getInstance().getReferenceFromUrl("gs://imbededproject.appspot.com");
 
 
         if (ContextCompat.checkSelfPermission(getApplicationContext(),
@@ -151,20 +169,13 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
         //noinspection SimplifiableIfStatement
         if(id == R.id.action_camera)
         {
-            Intent intent = new Intent(this, CameraActivity.class);
-            startActivity(intent);
-            Toast.makeText(getApplicationContext(), "하잉", Toast.LENGTH_SHORT).show();
+            cameraIntent();
 //            media = new MediaPlayer();
 //            media.create(getBaseContext(),R.raw.ppap);
 //            media.setLooping(false);
 //            media.start();
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -319,8 +330,8 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
                             @Override
                             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
-                                if(mLocation.getLatitude() - 0.001 < Double.parseDouble(dataSnapshot.getValue(FireClass.class).lati) && mLocation.getLatitude() + 0.001 > Double.parseDouble(dataSnapshot.getValue(FireClass.class).lati) &&
-                                        mLocation.getLongitude() - 0.001 < Double.parseDouble(dataSnapshot.getValue(FireClass.class).longi) && mLocation.getLatitude() + 0.001 < Double.parseDouble(dataSnapshot.getValue(FireClass.class).longi)){
+                                if(mLocation.getLatitude() - 0.0005 < Double.parseDouble(dataSnapshot.getValue(FireClass.class).lati) && mLocation.getLatitude() + 0.0005 > Double.parseDouble(dataSnapshot.getValue(FireClass.class).lati) &&
+                                        mLocation.getLongitude() - 0.0005 < Double.parseDouble(dataSnapshot.getValue(FireClass.class).longi) && mLocation.getLatitude() + 0.0005 < Double.parseDouble(dataSnapshot.getValue(FireClass.class).longi)){
                                     if(lati == Double.parseDouble(dataSnapshot.getValue(FireClass.class).lati) && longi == Double.parseDouble(dataSnapshot.getValue(FireClass.class).longi)){
                                         savePushMainOffPreferences();
                                     } else{
@@ -520,5 +531,70 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
         editor.commit();
     }
 
+    private View.OnClickListener contentListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            if(contentDialog.mEditContent.getText().toString() != null){
+                mContent = contentDialog.mEditContent.getText().toString();
+                Uri capturedImage = Uri.fromFile(new File(imgPath));
+                StorageReference capturedImageRef = mStorageRef.child("images/" + capturedImage.getLastPathSegment());
+                sendFirebase(capturedImageRef, capturedImage);
+                FireClass fireClass = new FireClass();
+                fireClass.userName = "jinwoo002@naver.com";
+                fireClass.lati = Double.toString(mLocation.getLatitude());
+                fireClass.longi = Double.toString(mLocation.getLongitude());
+                fireClass.PhotoUrl = capturedImage.getLastPathSegment().toString();
+                fireClass.comment = mContent;
+
+                mDatabaseReference.push().setValue(fireClass);
+                mDbOpenHelper.insertColumn("jinwoo@naver.com", capturedImage.getLastPathSegment().toString(),
+                        Double.toString(mLocation.getLatitude()), Double.toString(mLocation.getLongitude()), mContent);
+            }
+            contentDialog.dismiss();
+        }
+    };
+
+    private void cameraIntent() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, getFileUri());
+        startActivityForResult(intent, IMAGE_CAMERA_REQUEST);
+    }
+
+    private Uri getFileUri() {
+        File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), System.currentTimeMillis() + ".png");
+        imgPath = file.getAbsolutePath();
+        return FileProvider.getUriForFile(this, "com.wocba.imbededsystem.provider", file);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case IMAGE_CAMERA_REQUEST:
+                    // 찍고 저장하면 imageView에 보여주면서 firebase에 저장
+
+                    contentDialog = new ContentDialog(this, contentListener);
+                    contentDialog.show();
+
+                    break;
+            }
+        }
+    }
+    private void sendFirebase(StorageReference imageRef, Uri image) {
+
+        imageRef.putFile(image)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Log.e(TAG, "success");
+                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        Log.e(TAG, "fail");
+                    }
+                });
+    }
 
 }
