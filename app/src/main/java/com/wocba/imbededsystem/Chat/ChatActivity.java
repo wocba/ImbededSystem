@@ -69,8 +69,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initFirebaseDatabase() {
+        Intent intent = getIntent();
+        String markerKey = intent.getStringExtra("markerKey");
         mAuth = FirebaseAuth.getInstance();
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference("users").child(mAuth.getCurrentUser().getUid());
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("markers").child(markerKey);
         mChatReference = mDatabaseReference.child("chats");
         mChildEventListener = new ChildEventListener() {
             @Override

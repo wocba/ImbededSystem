@@ -48,6 +48,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.wocba.imbededsystem.Chat.ChatActivity;
 import com.wocba.imbededsystem.Common.BaseActivity;
 import com.wocba.imbededsystem.Data.DbOpenHelper;
 import com.wocba.imbededsystem.Data.FireClass;
@@ -56,6 +57,8 @@ import com.wocba.imbededsystem.Service.MyService;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends BaseActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
     private static final String TAG = "MainActivity";
@@ -68,6 +71,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
     private FirebaseDatabase mFirebaseDatabase;
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseReference;
+    private DatabaseReference mMarkerReference;
     private ChildEventListener mChildMapEventListener;
     private ChildEventListener mChildMarkerEventListener;
     private ChildEventListener mChildLocationEventListener;
@@ -88,6 +92,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
 
     private MediaPlayer media;
 
+    private String markerKey;
     private double lati;
     private double longi;
     private String email = null;
@@ -110,7 +115,8 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
         mDbOpenHelper.open();
         mAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mDatabaseReference = mFirebaseDatabase.getInstance().getReference("markers");
+        mDatabaseReference = mFirebaseDatabase.getInstance().getReference();
+        mMarkerReference = mDatabaseReference.child("markers");
         mStorageRef = FirebaseStorage.getInstance().getReferenceFromUrl("gs://imbededproject.appspot.com");
 
 
@@ -286,7 +292,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
 
             }
         };
-        mDatabaseReference.addChildEventListener(mChildMapEventListener);
+        mMarkerReference.addChildEventListener(mChildMapEventListener);
         mMap.setOnMarkerClickListener(this);
     }
 
@@ -370,7 +376,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
 
                             }
                         };
-                        mDatabaseReference.addChildEventListener(mChildLocationEventListener);
+                        mMarkerReference.addChildEventListener(mChildLocationEventListener);
 
 
 //                        mCursor = mDbOpenHelper.getAllColumns();
@@ -448,13 +454,9 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
     }
 
     @Override
-    public boolean onMarkerClick(Marker marker) {
+    public boolean onMarkerClick(final Marker marker) {
 
         Bmarker = marker;
-//        String name = null;
-//        String content = null;
-//        String image = null;
-
         Toast.makeText(this, Bmarker.getTitle() + "," + Bmarker.getPosition(), Toast.LENGTH_SHORT).show();
 
         mChildMarkerEventListener = new ChildEventListener() {
@@ -465,6 +467,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
                     email = dataSnapshot.getValue(FireClass.class).userEmail;
                     content = dataSnapshot.getValue(FireClass.class).comment;
                     image = dataSnapshot.getValue(FireClass.class).PhotoUrl;
+                    markerKey = dataSnapshot.getValue(FireClass.class).firebaseKey;
                 }
             }
 
@@ -488,7 +491,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
 
             }
         };
-        mDatabaseReference.addChildEventListener(mChildMarkerEventListener);
+        mMarkerReference.addChildEventListener(mChildMarkerEventListener);
 //
 //        mCursor = mDbOpenHelper.getAllColumns();
 //
@@ -501,20 +504,23 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
 //        }
 //        mCursor.close();
 
-        detailDialog = new DetailDialog(this, deleteChatListener, deleteCancelListener, email, content, image);
+        detailDialog = new DetailDialog(this, chatListener, cancelListener, email, content, image);
         detailDialog.show();
         return true;
     }
 
-    private View.OnClickListener deleteCancelListener = new View.OnClickListener() {
+    private View.OnClickListener cancelListener = new View.OnClickListener() {
         public void onClick(View v) {
             detailDialog.dismiss();
         }
     };
 
-    private View.OnClickListener deleteChatListener = new View.OnClickListener() {
+    private View.OnClickListener chatListener = new View.OnClickListener() {
         public void onClick(View v) {
-
+            // key값으로 marker 마다 채팅방 생성
+            Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+            intent.putExtra("markerKey", markerKey);
+            startActivity(intent);
         }
     };
 
@@ -547,8 +553,13 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
                 fireClass.longi = Double.toString(mLocation.getLongitude());
                 fireClass.PhotoUrl = capturedImage.getLastPathSegment().toString();
                 fireClass.comment = mContent;
+                fireClass.firebaseKey = mMarkerReference.push().getKey();
 
-                mDatabaseReference.push().setValue(fireClass);
+                // key값으로 저장
+                Map<String, Object> markerValues = fireClass.toMap();
+                Map<String, Object> childUpdates = new HashMap<>();
+                childUpdates.put("/markers/" + fireClass.firebaseKey, markerValues);
+                mDatabaseReference.updateChildren(childUpdates);
                 mDbOpenHelper.insertColumn(mAuth.getCurrentUser().getEmail(), capturedImage.getLastPathSegment().toString(),
                         Double.toString(mLocation.getLatitude()), Double.toString(mLocation.getLongitude()), mContent);
             }
