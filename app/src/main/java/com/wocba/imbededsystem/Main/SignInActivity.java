@@ -16,6 +16,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.wocba.imbededsystem.R;
 
 /**
@@ -23,21 +25,20 @@ import com.wocba.imbededsystem.R;
  */
 
 public class SignInActivity extends AppCompatActivity implements View.OnClickListener {
-
-    EditText editTextEmail, editTextPassword;
-    ProgressBar progressbar;
+    private static final String TAG = "SignInActivity";
 
     private FirebaseAuth mAuth;
-    String TAG = "SignInActivity";
+    private DatabaseReference mDatabaseReference;
+
+    private EditText editTextEmail, editTextPassword;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signin);
-
         editTextEmail = (EditText)findViewById(R.id.editTextEmail);
         editTextPassword = (EditText)findViewById(R.id.editTextPassword);
-        progressbar = (ProgressBar)findViewById(R.id.progressbar);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -73,8 +74,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
             return;
         }
 
-        progressbar.setVisibility(View.GONE);
-
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -82,7 +81,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                         if (task.isSuccessful()) {
                             Log.d(TAG, "createUserWithEmail:success");
                             Toast.makeText(getApplicationContext(), "로그인 성공", Toast.LENGTH_SHORT).show();
-                            FirebaseUser user = mAuth.getCurrentUser();
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         }
                         else {

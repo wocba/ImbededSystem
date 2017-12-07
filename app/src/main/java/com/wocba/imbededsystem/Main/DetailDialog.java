@@ -31,7 +31,7 @@ import static android.content.ContentValues.TAG;
 public class DetailDialog extends Dialog {
 
     private View.OnClickListener mDetailChatListener;
-    private View.OnClickListener mDetailCancelListenr;
+    private View.OnClickListener mDetailCancelListner;
     private Button mChatButton;
     private Button mCancelButton;
     private String mName;
@@ -63,7 +63,7 @@ public class DetailDialog extends Dialog {
         mChatButton = (Button)findViewById(R.id.btn_chat);
         mCancelButton = (Button)findViewById(R.id.btn_back);
         mChatButton.setOnClickListener(mDetailChatListener);
-        mCancelButton.setOnClickListener(mDetailCancelListenr);
+        mCancelButton.setOnClickListener(mDetailCancelListner);
         mTextName = (TextView)findViewById(R.id.text_detail_name);
         mTextContent = (TextView)findViewById(R.id.text_detail_content);
         mTextName.setText(mName);
@@ -73,7 +73,7 @@ public class DetailDialog extends Dialog {
     public DetailDialog(Context context, View.OnClickListener detailChatListener, View.OnClickListener detailCancelListener, String name, String content, String image){
         super(context, android.R.style.Theme_Translucent_NoTitleBar);
         this.mDetailChatListener = detailChatListener;
-        this.mDetailCancelListenr = detailCancelListener;
+        this.mDetailCancelListner = detailCancelListener;
         this.mName = name;
         this.mContent = content;
         this.mImage = image;

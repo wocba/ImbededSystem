@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.wocba.imbededsystem.Chat.ChatActivity;
 import com.wocba.imbededsystem.Chat.ChatNick;
 import com.wocba.imbededsystem.Content.ContentActivity;
 import com.wocba.imbededsystem.Main.MainActivity;
@@ -146,7 +147,7 @@ public class BaseActivity extends AppCompatActivity
                 createBackStack(new Intent(this, ContentActivity.class));
                 break;
             case R.id.nav_chat:
-                Intent intentChat = new Intent(this, ChatNick.class);
+                Intent intentChat = new Intent(this, ChatActivity.class);
                 startActivity(intentChat);
                 break;
             case R.id.nav_option:

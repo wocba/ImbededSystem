@@ -39,6 +39,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -63,6 +64,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
 
     private DbOpenHelper mDbOpenHelper;
 
+    private FirebaseAuth mAuth;
     private FirebaseDatabase mFirebaseDatabase;
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseReference;
@@ -88,7 +90,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
 
     private double lati;
     private double longi;
-    private String name = null;
+    private String email = null;
     private String content = null;
     private String image = null;
     private String imgPath = "";
@@ -106,8 +108,9 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         mDbOpenHelper = new DbOpenHelper(this);
         mDbOpenHelper.open();
+        mAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mDatabaseReference = mFirebaseDatabase.getReference("marker");
+        mDatabaseReference = mFirebaseDatabase.getInstance().getReference("markers");
         mStorageRef = FirebaseStorage.getInstance().getReferenceFromUrl("gs://imbededproject.appspot.com");
 
 
@@ -459,7 +462,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 if(Bmarker.getPosition().latitude == Double.parseDouble(dataSnapshot.getValue(FireClass.class).lati) &&
                         Bmarker.getPosition().longitude == Double.parseDouble(dataSnapshot.getValue(FireClass.class).longi)){
-                    name = dataSnapshot.getValue(FireClass.class).userName;
+                    email = dataSnapshot.getValue(FireClass.class).userEmail;
                     content = dataSnapshot.getValue(FireClass.class).comment;
                     image = dataSnapshot.getValue(FireClass.class).PhotoUrl;
                 }
@@ -498,7 +501,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
 //        }
 //        mCursor.close();
 
-        detailDialog = new DetailDialog(this, deleteChatListener, deleteCancelListener,name,content,image);
+        detailDialog = new DetailDialog(this, deleteChatListener, deleteCancelListener, email, content, image);
         detailDialog.show();
         return true;
     }
@@ -539,14 +542,14 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
                 StorageReference capturedImageRef = mStorageRef.child("images/" + capturedImage.getLastPathSegment());
                 sendFirebase(capturedImageRef, capturedImage);
                 FireClass fireClass = new FireClass();
-                fireClass.userName = "jinwoo002@naver.com";
+                fireClass.userEmail = mAuth.getCurrentUser().getEmail();
                 fireClass.lati = Double.toString(mLocation.getLatitude());
                 fireClass.longi = Double.toString(mLocation.getLongitude());
                 fireClass.PhotoUrl = capturedImage.getLastPathSegment().toString();
                 fireClass.comment = mContent;
 
                 mDatabaseReference.push().setValue(fireClass);
-                mDbOpenHelper.insertColumn("jinwoo@naver.com", capturedImage.getLastPathSegment().toString(),
+                mDbOpenHelper.insertColumn(mAuth.getCurrentUser().getEmail(), capturedImage.getLastPathSegment().toString(),
                         Double.toString(mLocation.getLatitude()), Double.toString(mLocation.getLongitude()), mContent);
             }
             contentDialog.dismiss();

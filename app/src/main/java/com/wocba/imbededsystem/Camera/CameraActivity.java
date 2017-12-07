@@ -1,6 +1,5 @@
 package com.wocba.imbededsystem.Camera;
 
-
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -19,6 +18,7 @@ import android.widget.ImageView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -45,7 +45,7 @@ public class CameraActivity extends BaseActivity {
             android.Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
-
+    private FirebaseAuth mAuth;
     private String imgPath = "";
     private StorageReference mStorageRef;
     private Button camera_btn, gallery_btn;
@@ -61,6 +61,7 @@ public class CameraActivity extends BaseActivity {
 
         // Firebase Storage 참조
         mStorageRef = FirebaseStorage.getInstance().getReferenceFromUrl("gs://imbededproject.appspot.com");
+        mAuth = FirebaseAuth.getInstance();
 
         iv = (ImageView)findViewById(R.id.iv);
 
@@ -146,7 +147,7 @@ public class CameraActivity extends BaseActivity {
                     StorageReference capturedImageRef = mStorageRef.child("images/" + capturedImage.getLastPathSegment());
                     sendFirebase(capturedImageRef, capturedImage);
                     FireClass fireClass = new FireClass();
-                    fireClass.userName = "jinwoo002@naver.com";
+                    fireClass.userEmail = mAuth.getCurrentUser().getEmail();
                     fireClass.PhotoUrl = capturedImage.toString();
                     break;
 

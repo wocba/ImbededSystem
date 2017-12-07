@@ -17,7 +17,6 @@ import java.util.Locale;
  */
 
 public class ChatAdapter extends ArrayAdapter<ChatData> {
-    private final SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat("a h:mm", Locale.getDefault());
 
     public ChatAdapter(Context context, int resource) {
         super(context, resource);
@@ -31,7 +30,7 @@ public class ChatAdapter extends ArrayAdapter<ChatData> {
             convertView = inflater.inflate(R.layout.activity_chatlistitem, null);
 
             viewHolder = new ViewHolder();
-            viewHolder.mTxtUserName = (TextView) convertView.findViewById(R.id.txt_userName);
+            viewHolder.mTxtSenderEmail = (TextView) convertView.findViewById(R.id.txt_userName);
             viewHolder.mTxtMessage = (TextView) convertView.findViewById(R.id.txt_message);
             viewHolder.mTxtTime = (TextView) convertView.findViewById(R.id.txt_time);
 
@@ -41,15 +40,15 @@ public class ChatAdapter extends ArrayAdapter<ChatData> {
         }
 
         ChatData chatData = getItem(position);
-        viewHolder.mTxtUserName.setText(chatData.userName);
+        viewHolder.mTxtSenderEmail.setText(chatData.senderEmail);
         viewHolder.mTxtMessage.setText(chatData.message);
-        viewHolder.mTxtTime.setText(mSimpleDateFormat.format(chatData.time));
+        viewHolder.mTxtTime.setText(chatData.time);
 
         return convertView;
     }
 
     private class ViewHolder {
-        private TextView mTxtUserName;
+        private TextView mTxtSenderEmail;
         private TextView mTxtMessage;
         private TextView mTxtTime;
     }

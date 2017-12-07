@@ -6,7 +6,7 @@ package com.wocba.imbededsystem.Data;
 
 public class FireClass {
     public String firebaseKey; // Firebase Realtime Database 에 등록된 Key 값
-    public String userName; // 사용자 이름
+    public String userEmail; // 사용자 이메일
     public String PhotoUrl; // 사진 URL
     public String lati; // 위도
     public String longi; // 경도

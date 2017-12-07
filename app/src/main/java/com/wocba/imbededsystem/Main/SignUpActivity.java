@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
@@ -15,6 +16,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.wocba.imbededsystem.Data.User;
 import com.wocba.imbededsystem.R;
 
 /**
@@ -22,11 +26,12 @@ import com.wocba.imbededsystem.R;
  */
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener{
+    private static final String TAG = "SignUpActivity";
 
-    EditText editTextEmail, editTextPassword;
-    ProgressBar progressbar;
+    EditText editTextEmail, editTextPassword, editTextNickname;
 
     private FirebaseAuth mAuth;
+    private DatabaseReference mDatabaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,9 +40,10 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
         editTextEmail = (EditText)findViewById(R.id.editTextEmail);
         editTextPassword = (EditText)findViewById(R.id.editTextPassword);
-        progressbar = (ProgressBar)findViewById(R.id.progressbar);
+        editTextNickname = (EditText)findViewById(R.id.editTextNickname);
 
         mAuth = FirebaseAuth.getInstance();
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
         findViewById(R.id.buttonSignUp).setOnClickListener(this);
         findViewById(R.id.textViewSignIn).setOnClickListener(this);
@@ -70,17 +76,17 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             editTextPassword.requestFocus();
             return;
         }
-        
-        progressbar.setVisibility(View.GONE);
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        progressbar.setVisibility(View.GONE);
                         if(task.isSuccessful()) {
                             Toast.makeText(getApplicationContext(), "회원가입이 완료되었습니다. 로그인창으로 이동합니다", Toast.LENGTH_SHORT).show();
                             FirebaseUser user = mAuth.getCurrentUser();
+                            writeNewUser(user.getUid(), editTextNickname.getText().toString(),
+                                    editTextEmail.getText().toString());
+
                             startActivity(new Intent(getApplicationContext(), SignInActivity.class));
                         }
                         else {
@@ -103,6 +109,11 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    private void writeNewUser(String userId, String nickname, String email) {
+        User user = new User(nickname, email);
+
+        mDatabaseReference.child("users").child(userId).setValue(user);
+    }
     @Override
     public void onStart() {
         super.onStart();
