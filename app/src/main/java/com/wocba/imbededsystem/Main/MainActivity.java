@@ -548,20 +548,24 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
                 StorageReference capturedImageRef = mStorageRef.child("images/" + capturedImage.getLastPathSegment());
                 sendFirebase(capturedImageRef, capturedImage);
                 FireClass fireClass = new FireClass();
-                fireClass.userEmail = mAuth.getCurrentUser().getEmail();
-                fireClass.lati = Double.toString(mLocation.getLatitude());
-                fireClass.longi = Double.toString(mLocation.getLongitude());
-                fireClass.PhotoUrl = capturedImage.getLastPathSegment().toString();
-                fireClass.comment = mContent;
-                fireClass.firebaseKey = mMarkerReference.push().getKey();
+                if(mLocation != null){
+                    fireClass.userEmail = mAuth.getCurrentUser().getEmail();
+                    fireClass.lati = Double.toString(mLocation.getLatitude());
+                    fireClass.longi = Double.toString(mLocation.getLongitude());
+                    fireClass.PhotoUrl = capturedImage.getLastPathSegment().toString();
+                    fireClass.comment = mContent;
+                    fireClass.firebaseKey = mMarkerReference.push().getKey();
+                    mDbOpenHelper.insertColumn(mAuth.getCurrentUser().getEmail(), capturedImage.getLastPathSegment().toString(),
+                            Double.toString(mLocation.getLatitude()), Double.toString(mLocation.getLongitude()), mContent);
+                }
+
 
                 // key값으로 저장
                 Map<String, Object> markerValues = fireClass.toMap();
                 Map<String, Object> childUpdates = new HashMap<>();
                 childUpdates.put("/markers/" + fireClass.firebaseKey, markerValues);
                 mDatabaseReference.updateChildren(childUpdates);
-                mDbOpenHelper.insertColumn(mAuth.getCurrentUser().getEmail(), capturedImage.getLastPathSegment().toString(),
-                        Double.toString(mLocation.getLatitude()), Double.toString(mLocation.getLongitude()), mContent);
+
             }
             contentDialog.dismiss();
         }

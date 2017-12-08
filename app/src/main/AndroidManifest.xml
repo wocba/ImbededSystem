@@ -2,18 +2,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.wocba.imbededsystem">
 
-
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false"/>
-    <uses-feature android:name="android.hardware.location.gps" />
+    <uses-feature android:name="android.hardware.location.gps"/>
 
     <meta-data
         android:name="com.google.gms.version"
@@ -40,13 +40,11 @@
             android:label="메인"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
-
         <activity
             android:name=".Main.SignUpActivity"
             android:label="회원가입"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
-
         <activity
             android:name=".Main.SignInActivity"
             android:label="로그인"
@@ -57,46 +55,40 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
         <activity
             android:name=".Content.ContentActivity"
-            android:parentActivityName=".Main.MainActivity"
             android:label="갤러리"
+            android:parentActivityName=".Main.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
-
         <activity
             android:name=".ContentDetail.ContentDetailActivity"
-            android:parentActivityName=".Content.ContentActivity"
             android:label="콘텐츠"
+            android:parentActivityName=".Content.ContentActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
-
         <activity
             android:name=".Camera.CameraActivity"
-            android:parentActivityName=".Main.MainActivity"
             android:label="카메라"
+            android:parentActivityName=".Main.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
-
         <activity
-            android:windowSoftInputMode="stateAlwaysHidden"
             android:name=".Chat.ChatNick"
             android:label="채팅첫설정"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden">
         </activity>
-
         <activity
-            android:windowSoftInputMode="stateAlwaysHidden"
             android:name=".Chat.ChatActivity"
             android:label="채팅"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden">
         </activity>
-
         <activity
             android:name=".Option.OptionActivity"
-            android:parentActivityName=".Main.MainActivity"
             android:label="설정"
+            android:parentActivityName=".Main.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
@@ -116,6 +108,11 @@
                 android:resource="@xml/provider_paths"/>
         </provider>
 
+        <receiver
+            android:name=".Chat.ChatReceiver"
+            android:enabled="true"
+            android:exported="true">
+        </receiver>
     </application>
 
 </manifest>

@@ -8,7 +8,6 @@ import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -17,7 +16,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.wocba.imbededsystem.R;
 
 /**
@@ -41,6 +39,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         editTextPassword = (EditText)findViewById(R.id.editTextPassword);
 
         mAuth = FirebaseAuth.getInstance();
+
 
         findViewById(R.id.buttonSignIn).setOnClickListener(this);
         findViewById(R.id.textViewSignUp).setOnClickListener(this);

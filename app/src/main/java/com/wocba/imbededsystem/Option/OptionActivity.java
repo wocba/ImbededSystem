@@ -22,7 +22,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.wocba.imbededsystem.Chat.ChatNick;
 import com.wocba.imbededsystem.Content.ContentActivity;
 import com.wocba.imbededsystem.Main.MainActivity;
 import com.wocba.imbededsystem.R;
@@ -81,7 +80,7 @@ public class OptionActivity extends PreferenceActivity implements NavigationView
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.option_main);
         setContentView(R.layout.activity_option);
-        mNavigationView.getMenu().getItem(3).setChecked(true);
+        mNavigationView.getMenu().getItem(2).setChecked(true);
     }
 
     @Override
@@ -124,10 +123,6 @@ public class OptionActivity extends PreferenceActivity implements NavigationView
                 break;
             case R.id.nav_content:
                 createBackStack(new Intent(this, ContentActivity.class));
-                break;
-            case R.id.nav_chat:
-                Intent intentChat = new Intent(this, ChatNick.class);
-                startActivity(intentChat);
                 break;
             case R.id.nav_option:
                 createBackStack(new Intent(this, OptionActivity.class));

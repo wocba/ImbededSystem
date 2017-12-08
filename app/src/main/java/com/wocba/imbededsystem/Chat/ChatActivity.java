@@ -17,7 +17,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.wocba.imbededsystem.Data.User;
 import com.wocba.imbededsystem.R;
 
 import java.text.SimpleDateFormat;
@@ -31,6 +30,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     // Firebase
     private DatabaseReference mDatabaseReference;
     private DatabaseReference mChatReference;
+
     private FirebaseAuth mAuth;
     private ChildEventListener mChildEventListener;
     // Views
