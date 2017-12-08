@@ -30,7 +30,7 @@
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyCSQWxhxmAsxS8Rnbtoz9L-iTYgpEJPFpc"/>
+            android:value="AIzaSyBV9eBpEk5FdoOgFrfrNBVFxDfmLGT7VFA"/>
         <meta-data
             android:name="com.google.gms.version"
             android:value="@integer/google_play_services_version"/>
@@ -72,12 +72,6 @@
             android:label="카메라"
             android:parentActivityName=".Main.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-        <activity
-            android:name=".Chat.ChatNick"
-            android:label="채팅첫설정"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateAlwaysHidden">
         </activity>
         <activity
             android:name=".Chat.ChatActivity"
