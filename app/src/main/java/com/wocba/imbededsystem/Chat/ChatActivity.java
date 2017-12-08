@@ -17,6 +17,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.wocba.imbededsystem.R;
 
 import java.text.SimpleDateFormat;
@@ -30,9 +31,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     // Firebase
     private DatabaseReference mDatabaseReference;
     private DatabaseReference mChatReference;
+    private Query mChatQuery;
 
     private FirebaseAuth mAuth;
     private ChildEventListener mChildEventListener;
+    private ChildEventListener mChildReceiverEventListener;
     // Views
     private ListView mListView;
     private EditText mEdtMessage;
@@ -109,6 +112,35 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         };
         mChatReference.addChildEventListener(mChildEventListener);
 
+        mChatQuery = mDatabaseReference.child("chats").limitToLast(1);
+        mChildReceiverEventListener= new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                ChatData chatData = dataSnapshot.getValue(ChatData.class);
+                Intent intent = new Intent("com.wocba.imbedesystem.sendreceiver");
+                intent.putExtra("1", chatData.senderEmail);
+                sendBroadcast(intent);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        };
+        mChatQuery.addChildEventListener(mChildReceiverEventListener);
     }
 
     private void initValues() {

@@ -112,6 +112,11 @@
             android:name=".Chat.ChatReceiver"
             android:enabled="true"
             android:exported="true">
+            <intent-filter>
+                <action
+                    android:name="com.wocba.imbedesystem.sendreceiver">
+                </action>
+            </intent-filter>
         </receiver>
     </application>
 
