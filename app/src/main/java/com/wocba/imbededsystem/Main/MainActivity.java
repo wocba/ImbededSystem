@@ -76,6 +76,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
     private ChildEventListener mChildMarkerEventListener;
     private ChildEventListener mChildLocationEventListener;
     private Cursor mCursor;
+    private Context context;
 
     private GoogleMap mMap;
     private Uri mUri;
@@ -85,6 +86,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
     private Location mLocation;
 
     private DetailDialog detailDialog;
+    private ErrorDialog errorDialog;
     private ContentDialog contentDialog;
 
     private boolean push = false;
@@ -100,7 +102,9 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
     private String image = null;
     private String imgPath = "";
     private String mContent = null;
-    SharedPreferences pref;
+    private String mErrorMessage = null;
+    private SharedPreferences pref;
+
 
     // 임의로 정한 권한 상수
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 100;
@@ -237,24 +241,6 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 16));
         arrayPoints = new ArrayList<LatLng>();
-//        mCursor = mDbOpenHelper.getAllColumns();
-//        while (mCursor.moveToNext()) {
-//
-//            lati = Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("lati")).toString());
-//            longi = Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("longi")).toString());
-//
-//            BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.kbo);
-//            Bitmap b=bitmapdraw.getBitmap();
-//            Bitmap smallMarker = Bitmap.createScaledBitmap(b, 50, 50, false);
-//
-//            mMap.addMarker(new MarkerOptions()
-//                    .position(new LatLng(lati,longi))
-//                    .title("Marker")
-//                    .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
-//            );
-//        }
-//        mCursor.close();
-//        mMap.setOnMarkerClickListener(this);
 
         mChildMapEventListener = new ChildEventListener() {
             @Override
@@ -457,7 +443,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
     public boolean onMarkerClick(final Marker marker) {
 
         Bmarker = marker;
-        Toast.makeText(this, Bmarker.getTitle() + "," + Bmarker.getPosition(), Toast.LENGTH_SHORT).show();
+        context = this;
 
         mChildMarkerEventListener = new ChildEventListener() {
             @Override
@@ -468,6 +454,8 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
                     content = dataSnapshot.getValue(FireClass.class).comment;
                     image = dataSnapshot.getValue(FireClass.class).PhotoUrl;
                     markerKey = dataSnapshot.getValue(FireClass.class).firebaseKey;
+                    detailDialog = new DetailDialog(context, chatListener, cancelListener, email, content, image);
+                    detailDialog.show();
                 }
             }
 
@@ -504,8 +492,6 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
 //        }
 //        mCursor.close();
 
-        detailDialog = new DetailDialog(this, chatListener, cancelListener, email, content, image);
-        detailDialog.show();
         return true;
     }
 
@@ -521,6 +507,12 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
             Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
             intent.putExtra("markerKey", markerKey);
             startActivity(intent);
+        }
+    };
+
+    private View.OnClickListener errorListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            errorDialog.dismiss();
         }
     };
 
@@ -558,6 +550,11 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
                     mDbOpenHelper.insertColumn(mAuth.getCurrentUser().getEmail(), capturedImage.getLastPathSegment().toString(),
                             Double.toString(mLocation.getLatitude()), Double.toString(mLocation.getLongitude()), mContent);
                 }
+                else{
+                    mErrorMessage = "GPS 수신이 약합니다";
+                    errorDialog = new ErrorDialog(getBaseContext(), errorListener, mErrorMessage);
+                    errorDialog.show();
+                }
 
 
                 // key값으로 저장
@@ -566,6 +563,10 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
                 childUpdates.put("/markers/" + fireClass.firebaseKey, markerValues);
                 mDatabaseReference.updateChildren(childUpdates);
 
+            }else{
+                mErrorMessage = "내용을 입력해주세요";
+                errorDialog = new ErrorDialog(getBaseContext(), errorListener, mErrorMessage);
+                errorDialog.show();
             }
             contentDialog.dismiss();
         }

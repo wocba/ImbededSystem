@@ -22,7 +22,7 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="Imbeded"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -47,7 +47,7 @@
         </activity>
         <activity
             android:name=".Main.SignInActivity"
-            android:label="로그인"
+            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -65,12 +65,6 @@
             android:name=".ContentDetail.ContentDetailActivity"
             android:label="콘텐츠"
             android:parentActivityName=".Content.ContentActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-        <activity
-            android:name=".Camera.CameraActivity"
-            android:label="카메라"
-            android:parentActivityName=".Main.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity

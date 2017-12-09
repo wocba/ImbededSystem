@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:gravity="center"
+              android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="250dip"
+        android:layout_height="200dip"
+        android:background="@color/grey_three"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp">
+
+            <TextView
+                android:layout_width="120dp"
+                android:layout_height="100dp"
+                android:textColor="@color/black"
+                android:text="에러 내용 : "
+                android:textSize="25dp"
+                android:gravity="center"
+                android:id="@+id/error_jni"/>
+
+            <TextView
+                android:layout_width="120dp"
+                android:layout_height="100dp"
+                android:textColor="@color/black"
+                android:textSize="14dp"
+                android:id="@+id/error_content"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp">
+
+            <Button
+                android:id="@+id/btn_error"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="확인"/>
+
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
