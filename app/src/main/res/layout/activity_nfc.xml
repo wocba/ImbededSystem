@@ -24,7 +24,7 @@
 
 
         <!-- Content -->
-        <include layout="@layout/content_camera" />
+        <include layout="@layout/content_nfc" />
     </android.support.design.widget.CoordinatorLayout>
 
 

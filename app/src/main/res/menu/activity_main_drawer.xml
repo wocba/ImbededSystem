@@ -5,25 +5,28 @@
 
         <item
             android:id="@+id/nav_home"
-            android:icon="@drawable/kbo"
+            android:icon="@drawable/ic_menu_home"
             android:title="홈" />
 
         <item
             android:id="@+id/nav_content"
-            android:icon="@drawable/kbo"
+            android:icon="@drawable/ic_menu_gallery"
             android:title="갤러리" />
 
         <item
             android:id="@+id/nav_option"
-            android:icon="@drawable/kbo"
+            android:icon="@drawable/ic_menu_option"
             android:title="설정" />
 
         <item
+            android:id="@+id/nav_nfc"
+            android:icon="@drawable/ic_menu_nfc"
+            android:title="Nfc" />
+
+        <item
             android:id="@+id/nav_logout"
-            android:icon="@drawable/kbo"
+            android:icon="@drawable/ic_menu_logout"
             android:title="로그아웃" />
-
-
     </group>
 
 </menu>

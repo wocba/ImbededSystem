@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.wocba.imbededsystem.Content.ContentActivity;
 import com.wocba.imbededsystem.Main.MainActivity;
+import com.wocba.imbededsystem.Nfc.NfcActivity;
 import com.wocba.imbededsystem.Option.OptionActivity;
 import com.wocba.imbededsystem.R;
 
@@ -146,6 +147,9 @@ public class BaseActivity extends AppCompatActivity
                 break;
             case R.id.nav_option:
                 createBackStack(new Intent(this, OptionActivity.class));
+                break;
+            case R.id.nav_nfc:
+                createBackStack(new Intent(this, NfcActivity.class));
                 break;
             case R.id.nav_logout:
                 FirebaseAuth.getInstance().signOut();

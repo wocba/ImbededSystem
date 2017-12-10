@@ -247,7 +247,7 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 double lati = Double.parseDouble(dataSnapshot.getValue(FireClass.class).lati);
                 double longi = Double.parseDouble(dataSnapshot.getValue(FireClass.class).longi);
-                BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.kbo);
+                BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.heart);
                 Bitmap b = bitmapdraw.getBitmap();
                 Bitmap smallMarker = Bitmap.createScaledBitmap(b, 50, 50, false);
 
@@ -325,8 +325,8 @@ public class MainActivity extends BaseActivity implements OnMapReadyCallback, Go
                             @Override
                             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
-                                if(mLocation.getLatitude() - 0.0005 < Double.parseDouble(dataSnapshot.getValue(FireClass.class).lati) && mLocation.getLatitude() + 0.0005 > Double.parseDouble(dataSnapshot.getValue(FireClass.class).lati) &&
-                                        mLocation.getLongitude() - 0.0005 < Double.parseDouble(dataSnapshot.getValue(FireClass.class).longi) && mLocation.getLatitude() + 0.0005 < Double.parseDouble(dataSnapshot.getValue(FireClass.class).longi)){
+                                if(mLocation.getLatitude() - 0.0003 < Double.parseDouble(dataSnapshot.getValue(FireClass.class).lati) && mLocation.getLatitude() + 0.0003 > Double.parseDouble(dataSnapshot.getValue(FireClass.class).lati) &&
+                                        mLocation.getLongitude() - 0.0003 < Double.parseDouble(dataSnapshot.getValue(FireClass.class).longi) && mLocation.getLatitude() + 0.0003 < Double.parseDouble(dataSnapshot.getValue(FireClass.class).longi)){
                                     if(lati == Double.parseDouble(dataSnapshot.getValue(FireClass.class).lati) && longi == Double.parseDouble(dataSnapshot.getValue(FireClass.class).longi)){
                                         savePushMainOffPreferences();
                                     } else{

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Imbeded</string>
+    <string name="app_name">너의 마커는</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
